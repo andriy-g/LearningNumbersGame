@@ -16,9 +16,8 @@ import java.util.Random;
 
 public class LearningNumbersGame extends AppCompatActivity {
 
-    int number, number2;
-    int countTotal = 0;
-    int gamesWon = 0;
+    private LearningNumbersModel model = new LearningNumbersModel();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,76 +35,63 @@ public class LearningNumbersGame extends AppCompatActivity {
             }
         });
 
-        randomNumberStart();
-        countTotal++;
+        //Calls method from LearningNumbersModel.java and randomizes the numbers
+        model.randomNumberStart();
+
+        //Updates buttons to new random number
+        updateButtons();
+
     }
 
-    public void randomNumberStart()
+
+    //Left Button - Checks if number selected is correct
+    public void left(View v)
     {
-        //Generates random numbers for left and right button
-        Random rand = new Random();
-        number = rand.nextInt(10)+1;
-        number2 = rand.nextInt(10)+1;
+        countTotalGames();
+        boolean result = model.play(LearningNumbersModel.LEFT_SIDE);
+
+        if(result == true) {
+            totalGamesWon();
+            Toast.makeText(getBaseContext(), "You got it", Toast.LENGTH_LONG).show();
+        }
+        else {
+            Toast.makeText(getBaseContext(), "Try Again", Toast.LENGTH_LONG).show();
+        }
+        model.randomNumberStart();
+        updateButtons();
+    }
+
+    //Updates button with the new random number
+    public void updateButtons() {
         TextView myText = (TextView)findViewById(R.id.buttonLeft);
         TextView myText2 = (TextView)findViewById(R.id.buttonRight);
-        String myString = String.valueOf(number);
-        String myString2 = String.valueOf(number2);
+        String myString = String.valueOf(model.getLeftNumber());
+        String myString2 = String.valueOf(model.getRightNumber());
         myText.setText(myString);
         myText2.setText(myString2);
     }
-
-
-
-    //Left Button
-    public void left(View v)
-    {
-        if (number > number2)
-        {
-            gamesWon++;
-            Toast.makeText(getBaseContext(), "You got it", Toast.LENGTH_LONG).show();
-            countTotalGames();
-            totalGamesWon();
-
-//            Button displayWon = (Button)findViewById(R.id.won);
-//            displayWon.setText("" + ++gamesWon);
-        }
-        else
-        {
-            Toast.makeText(getBaseContext(), "Try Again", Toast.LENGTH_LONG).show();
-            countTotalGames();
-        }
-        countTotal++;
-        randomNumberStart();
-
-    }
-    //Right Button
+    //Right Button - check if it is correct
     public void right(View v)
     {
-        if (number2 > number)
-        {
-            gamesWon++;
-            Toast.makeText(getBaseContext(), "Good Job", Toast.LENGTH_LONG).show();
-            countTotalGames();
+        countTotalGames();
+
+        boolean result = model.play(LearningNumbersModel.RIGHT_SIDE);
+        if(result == true) {
             totalGamesWon();
-
-//            Button displayWon = (Button)findViewById(R.id.won);
-//            displayWon.setText("" + ++gamesWon);
+            Toast.makeText(getBaseContext(), "You got it", Toast.LENGTH_LONG).show();
         }
-        else
-        {
+        else {
             Toast.makeText(getBaseContext(), "Try Again", Toast.LENGTH_LONG).show();
-            countTotalGames();
         }
-        countTotal++;
-        randomNumberStart();
-
+        model.randomNumberStart();
+        updateButtons();
     }
 
     //Updates a button with the total games played value
     public void countTotalGames()
     {
         TextView myText = (TextView)findViewById(R.id.totalButton);
-        String myString = String.valueOf(countTotal);
+        String myString = String.valueOf(model.getCountTotal());
         myText.setText(myString);
     }
 
@@ -113,7 +99,7 @@ public class LearningNumbersGame extends AppCompatActivity {
     public void totalGamesWon()
     {
         TextView myText = (TextView)findViewById(R.id.won);
-        String myString = String.valueOf(gamesWon);
+        String myString = String.valueOf(model.getGamesWon());
         myText.setText(myString);
     }
 
